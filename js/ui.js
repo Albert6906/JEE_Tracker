@@ -1,14 +1,14 @@
-// ui.js
 import { shiftDateByYears } from './utils.js';
-import { getExamYear, setStoredExamYear, BASE_EXAM_YEAR, BASE_EXAM_DATES } from './storage.js';
-import { getCurrentDayKey, setCurrentDayKey, flushAndRestartSegment, updateLiveSummary } from './timer.js';
-import { initToday } from './storage.js';
+import { getExamYear, setStoredExamYear, BASE_EXAM_YEAR, BASE_EXAM_DATES, initToday, markBackupDone } from './storage.js';
+import { getCurrentDayKey, setCurrentDayKey, flushAndRestartSegment, updateLiveSummary, startAutosave, tryRestoreActiveSession } from './timer.js';
 import { renderSidebarTools, renderPlannerCalendar } from './planner.js';
 import { loadHistoryData } from './history.js';
-import { renderGarden } from './charts.js';
-import { runNotificationChecks } from './notifications.js';
-import { renderMockTestList } from './mocktest.js';
+import { renderGarden, renderHeatmap, renderTrendChart } from './charts.js';
+import { runNotificationChecks, renderNotifSettingsUI } from './notifications.js';
+import { renderMockTestList, renderMistakeTagPicker } from './mocktest.js';
 import { renderSyllabusTracker } from './syllabus.js';
+import { renderSleepLog } from './sleep.js';
+import { renderSyncUI } from './firebase-sync.js';
 
 // ----------------- TOASTS -----------------
 export function showToast(msg) {
@@ -18,16 +18,6 @@ export function showToast(msg) {
     el.innerText = msg;
     stack.appendChild(el);
     setTimeout(() => el.remove(), 8000);
-}
-
-// ----------------- DOWNLOAD BLOB (moved from utils) -----------------
-export function downloadBlob(content, filename, mime) {
-    let blob = new Blob([content], { type: mime });
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement("a");
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
-    showToast(`Exported ${filename}`);
 }
 
 // ----------------- SIDEBAR -----------------
@@ -82,7 +72,44 @@ export function checkDayRollover() {
 // ----------------- QUOTE OF THE DAY -----------------
 const JEE_QUOTES = [
     { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
-    // ... (rest of quotes unchanged, all 40 entries) ...
+    { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+    { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+    { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+    { text: "Discipline is the bridge between goals and accomplishment.", author: "Jim Rohn" },
+    { text: "The pain of discipline weighs ounces, the pain of regret weighs tons.", author: "Jim Rohn" },
+    { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
+    { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+    { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
+    { text: "Push yourself, because no one else is going to do it for you.", author: "Anonymous" },
+    { text: "Great things never come from comfort zones.", author: "Anonymous" },
+    { text: "Dream it. Wish it. Do it.", author: "Anonymous" },
+    { text: "Success doesn't just find you. You have to go out and get it.", author: "Anonymous" },
+    { text: "The harder you work for something, the greater you'll feel when you achieve it.", author: "Anonymous" },
+    { text: "Don't stop when you're tired. Stop when you're done.", author: "Anonymous" },
+    { text: "Wake up with determination. Go to bed with satisfaction.", author: "Anonymous" },
+    { text: "Do something today that your future self will thank you for.", author: "Sean Patrick Flanery" },
+    { text: "Little things make big days.", author: "Anonymous" },
+    { text: "It's going to be hard, but hard does not mean impossible.", author: "Anonymous" },
+    { text: "Don't wait for opportunity. Create it.", author: "Anonymous" },
+    { text: "Sometimes we're tested not to show our weaknesses, but to discover our strengths.", author: "Anonymous" },
+    { text: "The key to success is to focus on goals, not obstacles.", author: "Anonymous" },
+    { text: "Dream bigger. Do bigger.", author: "Anonymous" },
+    { text: "Don't limit your challenges. Challenge your limits.", author: "Anonymous" },
+    { text: "Pressure is a privilege — it means you're in a position to achieve great things.", author: "Billie Jean King" },
+    { text: "You were born with wings, don't crawl through life.", author: "Rumi" },
+    { text: "To be a champion, you have to believe in yourself when nobody else will.", author: "Sugar Ray Robinson" },
+    { text: "Believe in your infinite potential. Your only limitations are those you set upon yourself.", author: "Roy T. Bennett" },
+    { text: "Great minds discuss ideas; average minds discuss events; small minds discuss people.", author: "Eleanor Roosevelt" },
+    { text: "If your dreams don't scare you, they are too small.", author: "Richard Branson" },
+    { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
+    { text: "Rise above the average, push beyond your limits, and conquer the paper.", author: "Anonymous" },
+    { text: "Confidence comes from discipline and training.", author: "Robert Holtz" },
+    { text: "Small minds aim for comfort; great minds aim for mastery.", author: "Anonymous" },
+    { text: "You have the power to write your own rank. Now go build it.", author: "Anonymous" },
+    { text: "Think big, start small, act now.", author: "Robin Sharma" },
+    { text: "A mental attitude that is centered on success will attract success.", author: "Anonymous" },
+    { text: "Your capacity is infinitely greater than your current effort suggests.", author: "Anonymous" },
+    { text: "Refuse to settle for anything less than your absolute best.", author: "Anonymous" },
     { text: "The rank you want is waiting for the effort you haven't given yet.", author: "Anonymous" }
 ];
 
@@ -163,4 +190,45 @@ export function tickCountdowns() {
     if (bucket !== lastQuoteBucket) { renderQuoteOfDay(); lastQuoteBucket = bucket; }
     runNotificationChecks();
     renderGarden();
+}
+
+// ----------------- INIT APP (NEWLY ADDED) -----------------
+export function initApp() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) { registration.unregister(); }
+        });
+    }
+    console.log("✅ App Initialized Successfully");
+    let today = new Date().toISOString().split('T')[0];
+    setCurrentDayKey(today);
+
+    let picker = document.getElementById("history-picker");
+    picker.value = today; picker.setAttribute("max", today);
+
+    initToday();
+    updateLiveSummary();
+    renderSidebarTools();
+    loadHistoryData();
+    renderQuoteOfDay();
+    renderExamYearUI();
+    tickCountdowns();
+    setInterval(tickCountdowns, 1000);
+    renderHeatmap();
+    renderTrendChart();
+    document.getElementById("mock-date-input").value = today;
+    renderMistakeTagPicker();
+    renderSleepLog();
+
+    let lastYtLink = localStorage.getItem("jee_yt_last_link");
+    if (lastYtLink) document.getElementById("yt-link-input").value = lastYtLink;
+    if (!localStorage.getItem("jee_last_backup")) markBackupDone();
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+    renderPlannerCalendar();
+    tryRestoreActiveSession();
+    startAutosave();
+    renderNotifSettingsUI();
+    renderSyncUI();
 }
