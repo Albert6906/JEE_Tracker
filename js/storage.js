@@ -1,4 +1,3 @@
-// storage.js
 import { getTodayKey } from './utils.js';
 
 // ----------------- KEYS / CONSTANTS -----------------
