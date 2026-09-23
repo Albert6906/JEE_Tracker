@@ -1,0 +1,57 @@
+# Laya Demo — Michael Amador <me@almodover.fr> · https://github.com/almodover/laya-demo
+# SPDX-License-Identifier: 0BSD
+[project]
+name = "laya-demo"
+version = "0.2.0"
+description = "Laya Demo: analyse any text or ebook on 82 calibrated dimensions with the Laya decision engine"
+authors = [{ name = "Michael Amador", email = "me@almodover.fr" }]
+license = "0BSD"
+license-files = ["LICENSE"]
+requires-python = ">=3.13,<3.14"
+# GPU build: torch for ROCm 10 on gfx1151 (Radeon 8060S). One 81-question
+# pass over ~27.7k tokens: CPU 26-28 s -> GPU 1.65 s -> GPU + torch.compile
+# 1.03 s (english) / 0.43 s (multilingual).
+dependencies = [
+    "laya>=0.3.5",
+    # The extra NAME matters: an unknown extra is ignored silently and every
+    # kernel then fails with hipErrorInvalidImage.
+    "torch[device-gfx1151]==2.13.0+rocm10.0.0",
+    "triton",
+    # Direct deps only so [tool.uv.sources] applies — an explicit index is never
+    # searched for transitive packages.
+    "rocm[libraries,device-gfx1151]==10.0.0",
+    "rocm-bootstrap",
+    "rocm-sdk-core==10.0.0",
+    "rocm-sdk-libraries==10.0.0",
+    "rocm-sdk-device-gfx1151==10.0.0",
+    "amd-torch-device-gfx1151==2.13.0+rocm10.0.0",
+    "amd-torch-device-gfx115x==2.13.0+rocm10.0.0",
+    "transformers>=4.48.0",
+    "flask>=3.0",
+    "pypdf>=4.0",
+    "EbookLib>=0.18",
+    "lxml>=5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/almodover/laya-demo"
+Issues = "https://github.com/almodover/laya-demo/issues"
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+name = "amd-rocm10"
+url = "https://stable.repo.amd.com/rocm/whl-next/"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "amd-rocm10" }
+triton = { index = "amd-rocm10" }
+rocm = { index = "amd-rocm10" }
+rocm-bootstrap = { index = "amd-rocm10" }
+rocm-sdk-core = { index = "amd-rocm10" }
+rocm-sdk-libraries = { index = "amd-rocm10" }
+rocm-sdk-device-gfx1151 = { index = "amd-rocm10" }
+amd-torch-device-gfx1151 = { index = "amd-rocm10" }
+amd-torch-device-gfx115x = { index = "amd-rocm10" }

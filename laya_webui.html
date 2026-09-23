@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<!--
+  Laya Demo — Michael Amador <me@almodover.fr>
+  https://github.com/almodover/laya-demo
+  SPDX-License-Identifier: 0BSD
+  Model: Laya by convaiinnovations (https://huggingface.co/convaiinnovations/laya)
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="Michael Amador <me@almodover.fr>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laya Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Palette: HP-inspired blue on white */
+  :root{
+    --blue:#0049D9; --blue-dark:#003BB5; --blue-tint:#E6EEFE; --blue-glow:#5A8DFF;
+    --ink:#0A0F1F; --ink-soft:#475569; --ink-faint:#94A3B8;
+    --line:#E2E8F0; --bg:#FFFFFF; --bg-soft:#F8FAFC;
+    --ok:#12A150; --err:#D92D20; --warm:#E07B00;
+    --radius:14px;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    font-family:"DJR Display","Forma DJR Display","Forma DJR","DJR","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-feature-settings:"ss01","cv01","cv11";
+    background:var(--bg); color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ─── Header (same build as #pix-header) ─── */
+  header{ display:flex; align-items:center; gap:22px; padding:28px 36px 22px;
+          border-bottom:1px solid var(--line); background:var(--bg); }
+  .logo{ width:56px; height:56px; border-radius:14px; flex:0 0 auto; background:var(--blue);
+         box-shadow:0 6px 28px rgba(0,73,217,.35); display:grid; place-items:center; }
+  .logo svg{ width:30px; height:30px; }
+  .brand h1{ font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1.05; color:var(--ink); }
+  .brand h1 .accent{ color:var(--blue); }
+  .brand .sub{ font-size:11px; color:var(--ink-soft); letter-spacing:1.5px; text-transform:uppercase; margin-top:6px; }
+  .head-right{ margin-left:auto; text-align:right; font-size:12px; color:var(--ink-soft); line-height:1.8; }
+  .head-right .ok{ color:var(--ink); font-weight:600; }
+  .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:7px; vertical-align:1px; }
+  .dot.busy{ background:var(--blue); animation:pulse 1s infinite; }
+  .dot.warm{ background:var(--warm); animation:pulse 1s infinite; }
+  .dot.err{ background:var(--err); }
+  @keyframes pulse{ 50%{ opacity:.3 } }
+  .stripe{ height:3px; background:linear-gradient(90deg,var(--blue) 0%,var(--blue-glow) 50%,var(--blue) 100%);
+           background-size:200% 100%; animation:stripe-move 4s linear infinite; }
+  @keyframes stripe-move{ 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:30px 36px 80px; }
+  .card{ background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
+         box-shadow:0 1px 2px rgba(10,15,31,.04), 0 8px 24px rgba(10,15,31,.05); }
+  .panel{ padding:24px 26px; }
+
+  /* ─── Tabs as radio cards ─── */
+  .tabs{ display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+  .tab{ font-family:inherit; padding:11px 22px; border-radius:12px; cursor:pointer; font-size:14px; font-weight:500;
+        color:var(--ink); border:2px solid var(--line); background:var(--bg); transition:all .18s ease; }
+  .tab:hover{ border-color:var(--blue-glow); background:var(--bg-soft); }
+  .tab.active{ color:var(--blue-dark); border-color:var(--blue); background:var(--blue-tint);
+               box-shadow:0 4px 16px rgba(0,73,217,.18); }
+
+  textarea{ width:100%; min-height:220px; resize:vertical; background:var(--bg-soft); color:var(--ink);
+    border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-size:15px; line-height:1.65;
+    font-family:inherit; outline:none; transition:border .2s, box-shadow .2s; }
+  textarea:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,73,217,.15); background:var(--bg); }
+  textarea::placeholder{ color:var(--ink-faint); }
+
+  .dropzone{ border:2px dashed var(--line); border-radius:14px; padding:44px 20px; text-align:center;
+             cursor:pointer; transition:all .18s; background:var(--bg-soft); }
+  .dropzone:hover, .dropzone.drag{ border-color:var(--blue); background:var(--blue-tint); }
+  .dropzone .dz-icon{ width:48px; height:48px; margin:0 auto 14px; }
+  .dropzone p{ color:var(--ink-soft); font-size:14px; }
+  .dropzone p b{ color:var(--blue); font-weight:600; }
+  .dropzone .kinds{ margin-top:8px; font-size:11px; color:var(--ink-faint); letter-spacing:1.5px; text-transform:uppercase; line-height:2; }
+  .filechip{ display:none; margin-top:14px; padding:10px 16px; border-radius:10px; background:var(--blue-tint);
+             border:1px solid rgba(0,73,217,.25); color:var(--blue-dark); font-size:13px; font-weight:500; align-items:center; gap:10px; }
+  .filechip .sz{ color:var(--ink-soft); margin-left:auto; font-size:12px; }
+
+  .controls{ display:flex; align-items:center; gap:14px; margin-top:20px; flex-wrap:wrap; }
+  .modelsel{ font-family:inherit; background:var(--bg-soft); color:var(--ink); border:1.5px solid var(--line);
+             border-radius:10px; padding:11px 14px; font-size:14px; font-weight:500; outline:none; cursor:pointer; }
+  .modelsel:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,73,217,.15); }
+  .btn{ appearance:none; border:1px solid var(--blue); cursor:pointer; font-family:inherit; display:inline-flex;
+        align-items:center; gap:10px; font-size:15px; font-weight:700; letter-spacing:.02em; padding:13px 30px;
+        border-radius:12px; color:#fff; background:var(--blue); box-shadow:0 4px 20px rgba(0,73,217,.32);
+        transition:background .15s, transform .15s, box-shadow .2s; }
+  .btn svg{ width:18px; height:18px; }
+  .btn:hover{ background:var(--blue-dark); transform:translateY(-1px); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn.ghost{ background:var(--bg); color:var(--blue); border:2px solid var(--line); box-shadow:none;
+              font-weight:600; font-size:14px; padding:11px 24px; }
+  .btn.ghost:hover{ border-color:var(--blue); background:var(--blue-tint); }
+  .hint{ font-size:12.5px; color:var(--ink-soft); }
+
+  #progress{ display:none; margin-top:24px; padding:22px 26px; }
+  .bar-shell{ height:8px; border-radius:99px; background:var(--blue-tint); overflow:hidden; }
+  .bar-fill{ height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,var(--blue),var(--blue-glow));
+             transition:width .45s cubic-bezier(.22,1,.36,1); }
+  #progress.cooling .bar-fill{ background:linear-gradient(90deg,var(--warm),#F5B042); }
+  #progressText{ font-size:13.5px; color:var(--ink-soft); margin-bottom:10px; }
+  #progressPct{ float:right; color:var(--blue); font-weight:700; font-variant-numeric:tabular-nums; }
+
+  #results{ display:none; }
+  .hero-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:16px; margin-bottom:18px; }
+  .hero{ padding:20px 22px; position:relative; overflow:hidden; }
+  .hero::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--blue); }
+  .hero .label{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; }
+  .hero .value{ font-size:26px; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--ink); }
+  .hero .meta{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; }
+  .conf-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .conf-bar{ flex:1; height:6px; border-radius:99px; background:var(--blue-tint); overflow:hidden; }
+  .conf-bar>div{ height:100%; border-radius:99px; background:var(--blue); transition:width 1s cubic-bezier(.22,1,.36,1); }
+  .conf-num{ font-size:13px; color:var(--blue); font-weight:700; min-width:48px; text-align:right; font-variant-numeric:tabular-nums; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; margin:4px 0 24px; }
+  .chip{ padding:8px 16px; border-radius:99px; font-size:13px; font-weight:600; color:var(--blue-dark);
+         border:1px solid rgba(0,73,217,.22); background:var(--blue-tint); }
+  .chip span{ color:var(--ink-soft); font-weight:400; }
+
+  .section{ margin-bottom:14px; overflow:hidden; }
+  .sec-head{ display:flex; align-items:center; gap:12px; cursor:pointer; user-select:none; padding:18px 24px;
+             border-bottom:1px solid var(--line); }
+  .section.closed .sec-head{ border-bottom-color:transparent; }
+  .sec-head h3{ font-size:15px; font-weight:800; letter-spacing:-.01em; color:var(--ink); }
+  .sec-head .count{ font-size:11px; color:var(--ink-faint); letter-spacing:1.2px; text-transform:uppercase; }
+  .sec-head .chev{ margin-left:auto; transition:transform .3s; color:var(--blue); }
+  .section.closed .chev{ transform:rotate(-90deg); }
+  .sec-body{ padding:16px 24px 22px; display:grid; gap:12px 36px; grid-template-columns:repeat(auto-fill,minmax(440px,1fr)); }
+  .section.closed .sec-body{ display:none; }
+
+  .stat{ display:grid; grid-template-columns:170px 1fr 58px; gap:14px; align-items:center; }
+  .stat .sname{ font-size:13.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat .track{ height:8px; border-radius:99px; background:var(--blue-tint); overflow:hidden; }
+  .stat .fill{ height:100%; width:0%; border-radius:99px; background:var(--blue-glow);
+               transition:width 1.1s cubic-bezier(.22,1,.36,1); }
+  .stat.peak .fill{ background:var(--blue); }
+  .stat.peak .sname{ font-weight:600; }
+  .stat .spct{ font-size:13px; font-weight:700; color:var(--ink-soft); text-align:right; font-variant-numeric:tabular-nums; }
+  .stat.peak .spct{ color:var(--blue); }
+
+  .foot a{ color:var(--blue); text-decoration:none; text-transform:none; letter-spacing:0; font-weight:600; }
+  .foot a:hover{ text-decoration:underline; }
+  .foot{ text-align:center; margin-top:44px; font-size:11px; color:var(--ink-faint); letter-spacing:1.5px; text-transform:uppercase; }
+  .error-box{ display:none; margin-top:22px; padding:16px 22px; border-radius:12px; border:1px solid rgba(217,45,32,.3);
+              background:#FEF3F2; color:var(--err); font-size:14px; }
+
+  @media (max-width:640px){
+    header{ padding:20px 16px 16px; gap:14px; flex-wrap:wrap; }
+    .head-right{ margin-left:0; text-align:left; width:100%; }
+    .wrap{ padding:20px 16px 60px; }
+    .stat{ grid-template-columns:110px 1fr 52px; gap:10px; }
+    .sec-body{ grid-template-columns:1fr; padding:14px 16px 18px; }
+    .brand h1{ font-size:24px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <!-- open book -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a4 4 0 0 1 4 4V21a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6a4 4 0 0 0-4 4V21a3 3 0 0 1 3-3h7z"/></svg>
+  </div>
+  <div class="brand">
+    <h1>LAYA <span class="accent">Demo</span></h1>
+    <div class="sub">Deep Text Intelligence · 82 calibrated dimensions · Radeon 8060S · ROCm 10</div>
+  </div>
+  <div class="head-right">
+    <span id="statusDot" class="dot"></span><span id="statusTxt" class="ok">engine ready</span><br>
+    <span id="engineInfo">laya · convaiinnovations</span>
+  </div>
+</header>
+<div class="stripe"></div>
+
+<div class="wrap">
+
+  <div class="card panel" id="inputPanel">
+    <div class="tabs">
+      <button class="tab active" data-tab="paste">Paste Text</button>
+      <button class="tab" data-tab="file">Upload Document</button>
+    </div>
+
+    <div id="tab-paste">
+      <textarea id="txt" placeholder="Paste a story, chapter, article, poem… anything. Laya reads it in parallel passes and reports 79+ calibrated dimensions — romance, sci-fi, anger, horror, joy, and far more."></textarea>
+    </div>
+
+    <div id="tab-file" style="display:none">
+      <div class="dropzone" id="dropzone">
+        <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="#0049D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6"/><path d="m9 15 3-3 3 3"/>
+        </svg>
+        <p><b>Drop a document here</b> or click to browse</p>
+        <div class="kinds">TXT · PDF · EPUB · Books · Markdown</div>
+        <input type="file" id="fileInput" accept=".txt,.md,.pdf,.epub,.ep3,.json,.html,.htm,.log,.csv" style="display:none">
+      </div>
+      <div class="filechip" id="filechip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#003BB5" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <span id="fileName"></span><span class="sz" id="fileSize"></span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <select class="modelsel" id="model">
+        <option value="auto">Model · Auto-detect</option>
+        <option value="english">Model · English</option>
+        <option value="multilingual">Model · Multilingual</option>
+      </select>
+      <button class="btn" id="analyzeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a4 4 0 0 1 4 4V21a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6a4 4 0 0 0-4 4V21a3 3 0 0 1 3-3h7z"/></svg>Analyze</button>
+      <span class="hint" id="meter"></span>
+    </div>
+  </div>
+
+  <div class="card" id="progress">
+    <div id="progressText">Warming the engine…<span id="progressPct">0%</span></div>
+    <div class="bar-shell"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div id="results">
+    <div class="hero-grid">
+      <div class="card hero">
+        <div class="label">Primary Genre</div>
+        <div class="value" id="hGenre">—</div>
+        <div class="conf-row"><div class="conf-bar"><div id="hGenreBar"></div></div><div class="conf-num" id="hGenreConf"></div></div>
+      </div>
+      <div class="card hero">
+        <div class="label">Dominant Mood</div>
+        <div class="value" id="hMood">—</div>
+        <div class="conf-row"><div class="conf-bar"><div id="hMoodBar"></div></div><div class="conf-num" id="hMoodConf"></div></div>
+      </div>
+      <div class="card hero">
+        <div class="label">Document</div>
+        <div class="value" id="hWords">—</div>
+        <div class="meta" id="hDocMeta"></div>
+      </div>
+      <div class="card hero">
+        <div class="label">Inference</div>
+        <div class="value" id="hLatency">—</div>
+        <div class="meta" id="hEngine"></div>
+      </div>
+    </div>
+
+    <div class="chips" id="topChips"></div>
+    <div id="sections"></div>
+
+    <div style="text-align:center; margin-top:26px;">
+      <button class="btn ghost" id="sortBtn">Sort: by %</button>
+      <button class="btn" id="resetBtn">Analyze another →</button>
+    </div>
+  </div>
+
+  <div class="foot">Laya Demo by Michael Amador · <a href="mailto:me@almodover.fr">me@almodover.fr</a> · <a href="https://github.com/almodover/laya-demo" target="_blank" rel="noopener">github.com/almodover</a><br>powered by <a href="https://huggingface.co/convaiinnovations/laya" target="_blank" rel="noopener">convaiinnovations/laya</a> · non-autoregressive · calibrated probabilities</div>
+</div>
+
+<script src="laya_webui.js"></script>
+</body>
+</html>
