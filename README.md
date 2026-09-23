@@ -40,8 +40,16 @@ supported GPU it falls back to the CPU.
     uv sync
     LAYA_PRELOAD=english,multilingual uv run server.py
 
-Then open <http://localhost:5001>. The first start downloads the model
-(~1.5 GB) and compiles it for the GPU (about a minute).
+Then open <http://localhost:5001>. The first start compiles the model for the
+GPU (about a minute).
+
+### The model
+
+The model is **not included** in this repository. It is downloaded on first
+start from Hugging Face: **[convaiinnovations/laya](https://huggingface.co/convaiinnovations/laya)**
+(~1.5 GB, Apache-2.0). To fetch it ahead of time:
+
+    uv run hf download convaiinnovations/laya
 
 Useful settings (environment variables):
 
@@ -77,9 +85,7 @@ Micro Devices, Inc. This project is not affiliated with or endorsed by either.
 
 ## License
 
-[0BSD](LICENSE) — do anything you like with this code, no conditions, no
-attribution required (though a hello is always welcome). The Laya model and
-library it uses are Apache-2.0, by their authors.
+[Apache-2.0](LICENSE), same as Laya itself. See [NOTICE](NOTICE) for credits.
 
 ## Contact
 

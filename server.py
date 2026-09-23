@@ -1,7 +1,7 @@
 """
 Laya Demo — Backend
 ===================
-SPDX-License-Identifier: 0BSD
+SPDX-License-Identifier: Apache-2.0
 Author : Michael Amador <me@almodover.fr> · github.com/almodover
 Repo   : https://github.com/almodover/laya-demo
 Model  : Laya by convaiinnovations (https://huggingface.co/convaiinnovations/laya)

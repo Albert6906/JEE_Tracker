@@ -1,12 +1,12 @@
 # Laya Demo — Michael Amador <me@almodover.fr> · https://github.com/almodover/laya-demo
-# SPDX-License-Identifier: 0BSD
+# SPDX-License-Identifier: Apache-2.0
 [project]
 name = "laya-demo"
 version = "0.2.0"
 description = "Laya Demo: analyse any text or ebook on 82 calibrated dimensions with the Laya decision engine"
 authors = [{ name = "Michael Amador", email = "me@almodover.fr" }]
-license = "0BSD"
-license-files = ["LICENSE"]
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.13,<3.14"
 # GPU build: torch for ROCm 10 on gfx1151 (Radeon 8060S). One 81-question
 # pass over ~27.7k tokens: CPU 26-28 s -> GPU 1.65 s -> GPU + torch.compile

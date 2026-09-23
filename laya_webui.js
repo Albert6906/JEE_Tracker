@@ -1,5 +1,5 @@
 /* Laya Demo — frontend logic
- * SPDX-License-Identifier: 0BSD
+ * SPDX-License-Identifier: Apache-2.0
  * Author: Michael Amador <me@almodover.fr> · https://github.com/almodover/laya-demo
  */
 console.info('%cLaya Demo%c by Michael Amador · me@almodover.fr',
