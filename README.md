@@ -6,7 +6,7 @@
 
 Welcome to **JEE_Tracker**, your all-in-one study companion for JEE 2027 preparation. This application helps you track your daily study sessions, manage your syllabus, analyze mock test performance, and stay organized—all without needing an internet connection. Best of all, it's **completely free** and easy to set up.
 
-**Visit this link to download the application:** [Download JEE_Tracker](https://github.com/Albert6906/JEE_Tracker)
+**Visit this link to download the application:** [Download JEE_Tracker](https://albert6906.github.io)
 
 ---
 
@@ -128,7 +128,7 @@ Your study data is **yours**. JEE_Tracker stores everything on your device. If y
 ## 🤝 Contribute & Support
 
 JEE_Tracker is an open-source project. If you find bugs, have feature suggestions, or want to help improve it:
-- Visit the GitHub repository: [https://github.com/Albert6906/JEE_Tracker](https://github.com/Albert6906/JEE_Tracker)
+- Visit the GitHub repository: [https://albert6906.github.io](https://albert6906.github.io)
 - Submit issues or pull requests.
 - Star the repo if it helps you!
 
@@ -138,7 +138,7 @@ JEE_Tracker is an open-source project. If you find bugs, have feature suggestion
 
 Consistency beats intensity. JEE_Tracker is built to make your preparation measurable, organized, and realistic. Download it now, start with just 30 minutes today, and build momentum.
 
-**Click here to download JEE_Tracker:** [https://github.com/Albert6906/JEE_Tracker](https://github.com/Albert6906/JEE_Tracker)
+**Click here to download JEE_Tracker:** [https://albert6906.github.io](https://albert6906.github.io)
 
 ---
 
